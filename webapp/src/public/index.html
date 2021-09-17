@@ -1,3 +1,28 @@
 <html>
+<head>
+	<script src="/resources/vendors/jquery/jquery-3.6.0.min.js"></script>
+	<script src="/resources/vendors/mustache/mustache-4.2.0.js"></script>
+	<script src="/resources/js/pidroponics-auth.js"></script>
+</head>
 <p>Hello Pidroponic Towers</p>
+<p>Access token: <span id="jwt"></span></p>
+
+<script id="jwtDisplayTemplate" type="mustache/template">
+	{{.}}
+</script>
+
+<script>
+	var jwtDisplayTemplateElement = document.getElementById('jwtDisplayTemplate');
+	var jwtDisplayElement = document.getElementById('jwt');
+	var accessTokenRefreshInterval = window.setInterval(function(){
+		console.log('Request access token...');
+		requestAccessToken();
+		jwtDisplayElement.innerHTML = Mustache.render(jwtDisplayTemplateElement.innerHTML, getAccessToken());
+	}, 2000);
+
+	var stopAccessTokenRefresh = function() {
+		clearInterval(accessTokenRefreshInterval);
+	};
+</script>
+
 </html>
