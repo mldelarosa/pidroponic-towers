@@ -3,26 +3,39 @@
 	<script src="/resources/vendors/jquery/jquery-3.6.0.min.js"></script>
 	<script src="/resources/vendors/mustache/mustache-4.2.0.js"></script>
 	<script src="/resources/js/pidroponics-auth.js"></script>
+	<script src="/resources/js/pidroponics-api.js"></script>
+	<script src="/resources/js/app.js"></script>
+	<script src="/resources/js/index-ui.js"></script>
 </head>
-<p>Hello Pidroponic Towers</p>
+<body>
+<p>Pidroponic Towers</p>
+<div id="pidroponics"></div>
+
 <p>Access token: <span id="jwt"></span></p>
 
-<script id="jwtDisplayTemplate" type="mustache/template">
+<script id="render-0" type="x-tmpl-mustache">
+	1) Who are you?<br/>
+		<input type="text" id="txt__new-username"/>
+		<button id="btn__connect-new-device">Connect</button>
+	<br/><br/>
+	2) Wait for this client to make 3 requests...
+	<br/><br/>
+	3) Connection happens automatically...
+	<br/>
+</script>
+
+<script id="render-1" type="x-tmpl-mustache">
+	Connecting...
+</script>
+
+<script id="render-2" type="x-tmpl-mustache">
+	<p>You've been authenticated! Username: {{username}}</p>
+	<br/>
+</script>
+
+<script id="jwtDisplayTemplate" type="x-tmpl-mustache">
 	{{.}}
 </script>
 
-<script>
-	var jwtDisplayTemplateElement = document.getElementById('jwtDisplayTemplate');
-	var jwtDisplayElement = document.getElementById('jwt');
-	var accessTokenRefreshInterval = window.setInterval(function(){
-		console.log('Request access token...');
-		requestAccessToken();
-		jwtDisplayElement.innerHTML = Mustache.render(jwtDisplayTemplateElement.innerHTML, getAccessToken());
-	}, 2000);
-
-	var stopAccessTokenRefresh = function() {
-		clearInterval(accessTokenRefreshInterval);
-	};
-</script>
-
+</body>
 </html>
