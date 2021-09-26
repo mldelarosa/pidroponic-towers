@@ -1,18 +1,18 @@
 var SESSION_KEY = 'pidroponics.session';
 var SESSION_KEY_STATE = 'state';
-var SESSION_KEY_USERID = 'user.id';
+var SESSION_KEY_USERID = 'user-id';
 var SESSION_KEY_REFRESH_TOKEN = 'auth.token.refresh';
 var SESSION_KEY_ACCESS_TOKEN = 'auth.token.access';
 
-var SESSION_KEY_PIDROPONIC_USERNAME = 'pidroponics.username';
-var SESSION_KEY_PIDROPONIC_CLIENT = 'pidroponics.client';
+var SESSION_KEY_PIDROPONIC_USERNAME = 'username';
+var SESSION_KEY_PIDROPONIC_CLIENT = 'client';
 
 var COLOR_GREEN = '#00FF00';
 var COLOR_RED = '#FF0000';
 
 // USAGE:
 // TABLE[<event>][<current-state>] = <new-state>
-let STATE_TRANSITION_TABLE = [
+const STATE_TRANSITION_TABLE = [
 	// UNAUTHORIZED    //AUTHORIZING    //RUNNING
 	[		0,				1,				2		], // PAGE_LOAD
 	[		1,				-1,				-1		], // DID_SUBMIT_NEW_USER
@@ -20,13 +20,13 @@ let STATE_TRANSITION_TABLE = [
 	[		-1,				0,				-1		], // DID_ADD_NEW_USER_FAIL
 ]
 
-let STATE = {
+const STATE = {
 	UNAUTHORIZED: 0,
 	AUTHORIZING: 1,
 	RUNNING: 2
 }
 
-let EVENT = {
+const EVENT = {
 	PAGE_LOAD: 0,
 	DID_SUBMIT_NEW_USER: 1,
 	DID_ADD_NEW_USER: 2,
@@ -35,30 +35,28 @@ let EVENT = {
 
 class Pidroponics {
 	constructor(elem) {
-		let data = {};
+		let data = this.getSessionStorage();
+		if(!data) {
+			data = {};
+		}
 		this.dom = elem;
+		this.accessTokenInterval = {};
 
 		// No state present for app. Start as an unauthorized client.
 		if(!this.getState()) {
 			this.setState(STATE.UNAUTHORIZED);
 		}
-
-		// Parse the current state and initialize view based on existing state.
-		let nState = parseInt(this.getState());
-		switch(nState) {
-			case STATE.RUNNING:
-				data.username = this.getPidroponicUsername();
-				break
-		}
-		this.render(data);
 	};
 
-	render(data) {
+	render() {
+		let sessionData = this.getSessionStorage();
 		console.log('render-' + this.getState())
 		let renderTemplate = document.getElementById('render-' + this.getState());
 		if(renderTemplate) {
 			let template = document.getElementById('render-' + this.getState()).innerHTML;
-			let rendered = Mustache.render(template, data);
+			let rendered = Mustache.render(template, sessionData);
+			console.log('Rendering template with sessionData:');
+			console.log(sessionData); 
 			this.dom.innerHTML = rendered;
 		} else {
 			alert('Something went terribly bad; refreshing the session...');
@@ -86,18 +84,11 @@ class Pidroponics {
 				this.setPidroponicUserId(data.user_id);
 				this.setPidroponicUsername(data.username);
 				this.setPidroponicClient(data.client);
-				this.setRefreshToken(data.refresh_token);
-				promiseToRequestAccessToken(app.getRefreshToken())
-					.then(accessToken => {
-							this.setAccessToken(accessToken);
-						})
-						.catch(xhr => {
-							console.log('Failed to request access token with new refressh token');
-							console.log(xhr);
-						})
+				setRefreshToken(data.refresh_token);
 				break;
 			case EVENT.DID_ADD_NEW_USER_FAIL:
 				sessionStorage.removeItem(SESSION_KEY_PIDROPONIC_USERNAME);
+				sessionStorage.removeItem(SESSION_KEY);
 				break;
 			default:
 				console.log('Unknown event received: ' + event);
@@ -109,11 +100,11 @@ class Pidroponics {
 		console.log('Transitioning to state [' + nState + ']');
 		switch(nState) {
 			case STATE.AUTHORIZING:
-				var self = window.setInterval(function(){
+				var app_authorizationInterval = window.setInterval(function(){
 					console.log('Requesting new user authorization...');
 					promiseToGetNewAuthorizedUser(app.getPidroponicUsername(), app.getPidroponicClient())
 						.then(userAuthorization => {
-							window.clearInterval(self);
+							window.clearInterval(app_authorizationInterval);
 							app.onEvent(EVENT.DID_ADD_NEW_USER, userAuthorization);
 						})
 						.catch(jqXHR => {
@@ -122,9 +113,10 @@ class Pidroponics {
 				}, 2000);
 				break;
 			case STATE.RUNNING:
-				var self = window.setInterval(function(){
+				var app_authorizationRefreshInterval = promiseToRefreshAccessToken();
+				var app_statusInterval = window.setInterval(function(){
 					console.log('Requesting current status...');
-					promiseToGetStatus(app.getAccessToken())
+					promiseToGetStatus(getAccessToken())
 						.then(statusData => {
 							console.log(statusData);
 						})
@@ -137,7 +129,7 @@ class Pidroponics {
 		}
 
 		// Rendering
-		this.render(data);
+		this.render();
 	};
 
 	/** SETTERS AND GETTERS **/
@@ -213,34 +205,6 @@ class Pidroponics {
 		let ss = this.getSessionStorage();
 		if(ss) {
 			return ss[SESSION_KEY_USERID];
-		} else {
-			return undefined;
-		}
-	};
-
-	setRefreshToken(newRefreshToken) {
-		let ss = this.getSessionStorage();
-		if(!ss) { ss = {}; }
-		ss[SESSION_KEY_REFRESH_TOKEN] = newRefreshToken;
-		this.setSessionStorage(ss);
-		return ss[SESSION_KEY_REFRESH_TOKEN];
-	};
-	getRefreshToken() {
-		let ss = this.getSessionStorage();
-		if(ss) {
-			return ss[SESSION_KEY_REFRESH_TOKEN];
-		} else {
-			return undefined;
-		}
-	};
-
-	setAccessToken(newAccessToken) {
-		sessionStorage.setItem(SESSION_KEY_ACCESS_TOKEN, newAccessToken);
-	};
-	getAccessToken() {
-		let strState = sessionStorage.getItem(SESSION_KEY_ACCESS_TOKEN);
-		if(strState) {
-			return strState;
 		} else {
 			return undefined;
 		}

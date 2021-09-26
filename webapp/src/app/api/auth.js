@@ -47,7 +47,7 @@ router.post('/token', function (req, res) {
 			sub: '*', // anonymous user
 			}, JWT_SIGNING_SECRET);
 		tokenRequestCount = 0;
-		res.status(200).json({ jwt: token });
+		res.status(200).json({ jwt: token});
 	}
 });
 
