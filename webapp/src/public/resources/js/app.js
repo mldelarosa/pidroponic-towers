@@ -1,8 +1,6 @@
 var SESSION_KEY = 'pidroponics.session';
 var SESSION_KEY_STATE = 'state';
 var SESSION_KEY_USERID = 'user-id';
-var SESSION_KEY_REFRESH_TOKEN = 'auth.token.refresh';
-var SESSION_KEY_ACCESS_TOKEN = 'auth.token.access';
 
 var SESSION_KEY_PIDROPONIC_USERNAME = 'username';
 var SESSION_KEY_PIDROPONIC_CLIENT = 'client';
@@ -50,12 +48,11 @@ class Pidroponics {
 
 	render() {
 		let sessionData = this.getSessionStorage();
-		console.log('render-' + this.getState())
 		let renderTemplate = document.getElementById('render-' + this.getState());
 		if(renderTemplate) {
 			let template = document.getElementById('render-' + this.getState()).innerHTML;
 			let rendered = Mustache.render(template, sessionData);
-			console.log('Rendering template with sessionData:');
+			console.log('Rendering state-template with session data:');
 			console.log(sessionData); 
 			this.dom.innerHTML = rendered;
 		} else {

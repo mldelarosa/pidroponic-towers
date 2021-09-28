@@ -8,6 +8,7 @@ $( document ).ready(function() {
 
 function registerDomListeners() {
 	$('#btn__connect-new-device').click(didClickPidroponicsConnect);
+	$('#btn__get-temperature-readout').click(didClickReadTemperature);
 };
 
 function didClickPidroponicsConnect() {
@@ -19,12 +20,14 @@ function didClickPidroponicsConnect() {
 	app.onEvent(EVENT.DID_SUBMIT_NEW_USER, data);
 };
 
-function did() {
-	var jwtDisplayTemplateElement = document.getElementById('jwtDisplayTemplate');
-	var jwtDisplayElement = document.getElementById('jwt');
-	var accessTokenRefreshInterval = 
-
-	function stopAccessTokenRefresh() {
-		clearInterval(accessTokenRefreshInterval);
-	};
-}
+function didClickReadTemperature() {
+	let txtTemperature = document.getElementById('txt__readout-temperature');
+	promiseToGetTemperatureReadout(getAccessToken()).then(
+			readout => {
+				txtTemperature.value = readout;
+			},
+			xhr => {
+				console.log('There was a problem requesting temperature sensor readout.');
+				console.log(xhr);
+		});
+};

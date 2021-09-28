@@ -72,3 +72,32 @@ function promiseToGetStatus(bearerToken) {
 		});
 	});
 };
+
+/* Device API */
+
+function promiseToGetSensorReadout(sensor, bearerToken) {
+	let sensorReadoutPath = '/api/device/sensor/' + sensor;
+	return new Promise((resolve, reject) => {
+		$.ajax({
+			type: "GET",
+			url: sensorReadoutPath,
+			dataType: 'json',
+			headers: { Authorization: 'Bearer ' + bearerToken },
+			success: function(data) {
+				resolve(data.readout);
+			},
+			error: function(xhr, status, error) {
+				console.log('Error requesting temperature readout.');
+				console.log(xhr);
+				if (xhr.status == 401) {
+					reauth();
+				}
+				reject(xhr);
+			}
+		});
+	});
+}
+
+function promiseToGetTemperatureReadout(bearerToken) {
+	return promiseToGetSensorReadout('temperature', bearerToken);
+};

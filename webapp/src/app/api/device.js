@@ -20,7 +20,7 @@ router.use(function timeLog (req, res, next) {
 
 // Returns info about the access token
 router.get('/', function (req, res) {
-	let response = { message: 'OK' };
+	let response = { message: '[sensor]' };
 	return res.status(200).json(response);
 });
 

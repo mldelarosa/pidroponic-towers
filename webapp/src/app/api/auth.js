@@ -3,7 +3,7 @@ var express = require('express');
 var router = express.Router();
 
 const jwt = require('jsonwebtoken');
-const jwtFilter = require('../../controllers/filters/bearer-token-jwt');
+const jwtFilter = require('../../controller/filter/bearer-token-jwt');
 
 const JWT_SIGNING_SECRET = 'changeme';
 const PUBLIC_PATHS = [

@@ -1,9 +1,14 @@
 'use strict'
+
+/* Declare Data Model*/
+var TemperatureDao = require('../../../dao-provider/localhost-middleware/sensors/temperature.js');
+var temperatureDao = new TemperatureDao();
+
 var express = require('express');
 var router = express.Router();
 
 const jwt = require('jsonwebtoken');
-const jwtFilter = require('../../controller/filter/bearer-token-jwt');
+const jwtFilter = require('../../../controller/filter/bearer-token-jwt');
 
 const JWT_SIGNING_SECRET = 'changeme';
 const PUBLIC_PATHS = []; // Intentionally empty: all paths require authentication.
@@ -19,8 +24,9 @@ router.use(function timeLog (req, res, next) {
 });
 
 // Returns info about the access token
-router.get('/', function (req, res) {
-	let response = { message: 'OK' };
+router.get('/temperature', function (req, res) {
+	let temperatureSensor = temperatureDao.getTemperatureSensor();
+	let response = { readout: temperatureSensor.getSensorReadout() };
 	return res.status(200).json(response);
 });
 

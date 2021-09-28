@@ -1,6 +1,9 @@
 'use strict'
 var LOGOUT_URL = '/auth/logout';
 var accessTokenRefreshInterval;
+var SESSION_KEY_REFRESH_TOKEN = 'auth.token.refresh';
+var SESSION_KEY_ACCESS_TOKEN = 'auth.token.access';
+
 
 function setAccessTokenRefreshInterval(intervalMs) {
 	accessTokenRefreshInterval = window.setInterval(function() {
