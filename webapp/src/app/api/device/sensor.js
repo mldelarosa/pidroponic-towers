@@ -1,11 +1,17 @@
 'use strict'
 
 /* Declare Data Model*/
-var TemperatureDao = require('../../../dao-provider/device-middleware/sensors/temperature');
-var HumidityDao = require('../../../dao-provider/device-middleware/sensors/humidity');
-var temperatureDao = new TemperatureDao();
-var humidityDao = new HumidityDao();
-
+const requireBasePath = '../../../dao-provider/device-middleware/sensors/';
+const Sensors = {
+	TEMPERATURE: 'temperature',
+	HUMIDITY: 'humidity'
+};
+var SensorDaoFactory = {};
+Object.keys(Sensors).map(key => {
+	let sensor = Sensors[key];
+	const sensorDao = require(requireBasePath + sensor);
+	SensorDaoFactory[sensor] = new sensorDao();
+});
 
 var express = require('express');
 var router = express.Router();
@@ -27,13 +33,13 @@ router.use(function timeLog (req, res, next) {
 });
 
 router.get('/temperature', function (req, res) {
-	let temperatureSensor = temperatureDao.getTemperatureSensor();
+	let temperatureSensor = SensorDaoFactory[Sensors.TEMPERATURE].getTemperatureSensor();
 	let response = { readout: temperatureSensor.getSensorReadout() };
 	return res.status(200).json(response);
 });
 
 router.get('/humidity', function (req, res) {
-	let humiditySensor = humidityDao.getHumiditySensor();
+	let humiditySensor = SensorDaoFactory[Sensors.HUMIDITY].getHumiditySensor();
 	let response = { readout: humiditySensor.getSensorReadout() };
 	return res.status(200).json(response);
 });
