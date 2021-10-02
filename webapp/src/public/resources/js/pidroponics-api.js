@@ -101,3 +101,7 @@ function promiseToGetSensorReadout(sensor, bearerToken) {
 function promiseToGetTemperatureReadout(bearerToken) {
 	return promiseToGetSensorReadout('temperature', bearerToken);
 };
+
+function promiseToGetHumidityReadout(bearerToken) {
+	return promiseToGetSensorReadout('humidity', bearerToken);
+};
