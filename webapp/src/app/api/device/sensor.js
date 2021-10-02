@@ -1,7 +1,7 @@
 'use strict'
 
 /* Declare Data Model*/
-var TemperatureDao = require('../../../dao-provider/localhost-middleware/sensors/temperature.js');
+var TemperatureDao = require('../../../dao-provider/device-middleware/sensors/temperature.js');
 var temperatureDao = new TemperatureDao();
 
 var express = require('express');
