@@ -73,7 +73,7 @@ function promiseToGetStatus(bearerToken) {
 	});
 };
 
-/* Device API */
+/* Sensor API */
 
 function promiseToGetSensorReadout(sensor, bearerToken) {
 	let sensorReadoutPath = '/api/device/sensor/' + sensor;
@@ -98,6 +98,31 @@ function promiseToGetSensorReadout(sensor, bearerToken) {
 	});
 }
 
+/* Device API */
+function promiseToGetDeviceStatus(device, bearerToken) {
+	let deviceReadoutPath = '/api/device/' + device;
+	return new Promise((resolve, reject) => {
+		$.ajax({
+			type: "GET",
+			url: deviceReadoutPath,
+			dataType: 'json',
+			headers: { Authorization: 'Bearer ' + bearerToken },
+			success: function(data) {
+				let dataObj = JSON.parse(data);
+				resolve(dataObj);
+			},
+			error: function(xhr, status, error) {
+				console.log('Error requesting temperature readout.');
+				console.log(xhr);
+				if (xhr.status == 401) {
+					reauth();
+				}
+				reject(xhr);
+			}
+		});
+	});
+}
+
 function promiseToGetTemperatureReadout(bearerToken) {
 	return promiseToGetSensorReadout('temperature', bearerToken);
 };
@@ -105,3 +130,33 @@ function promiseToGetTemperatureReadout(bearerToken) {
 function promiseToGetHumidityReadout(bearerToken) {
 	return promiseToGetSensorReadout('humidity', bearerToken);
 };
+
+function promiseToGetLightStatus(bearerToken) {
+	return promiseToGetDeviceStatus('light', bearerToken);
+};
+
+function promiseToToggleLightStatus(bearerToken) {
+	let deviceReadoutPath = '/api/device/light';
+	return new Promise((resolve, reject) => {
+		let cmdData = { cmd: 'toggle' };
+		$.ajax({
+			type: "POST",
+			url: deviceReadoutPath,
+			dataType: 'json',
+			data: cmdData,
+			headers: { Authorization: 'Bearer ' + bearerToken },
+			success: function(data) {
+				let dataObj = JSON.parse(data);
+				resolve(dataObj);
+			},
+			error: function(xhr, status, error) {
+				console.log('Error requesting temperature readout.');
+				console.log(xhr);
+				if (xhr.status == 401) {
+					reauth();
+				}
+				reject(xhr);
+			}
+		});
+	});
+}

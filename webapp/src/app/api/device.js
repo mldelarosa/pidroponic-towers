@@ -1,4 +1,17 @@
 'use strict'
+
+/* Declare Data Model*/
+const requireBasePath = '../../dao-provider/device-middleware/devices/';
+const Devices = {
+	LIGHT: 'light'
+};
+var DeviceDaoFactory = {};
+Object.keys(Devices).map(key => {
+	let device = Devices[key];
+	const sensorDao = require(requireBasePath + device);
+	DeviceDaoFactory[device] = new sensorDao();
+});
+
 var express = require('express');
 var router = express.Router();
 
@@ -18,9 +31,27 @@ router.use(function timeLog (req, res, next) {
 	}
 });
 
-// Returns info about the access token
-router.get('/', function (req, res) {
-	let response = { message: '[sensor]' };
+router.get('/light', function (req, res) {
+	let light = DeviceDaoFactory[Devices.LIGHT].getLight();
+	return res.status(200).json(JSON.stringify(light));
+});
+
+router.post('/light', function (req, res) {
+	let light = DeviceDaoFactory[Devices.LIGHT].getLight();
+	switch(req.body.cmd) {
+		case 'toggle':
+			console.log('On light toggle...');
+			light.toggleOn();
+			break;
+		default:
+			let requestedState = req.body.state
+			if(requestedState) {
+				light.setState(requestedState);
+			}
+			break;
+	}
+	let updatedLight = DeviceDaoFactory[Devices.LIGHT].updateLight(light);
+	let response = JSON.stringify(updatedLight);
 	return res.status(200).json(response);
 });
 

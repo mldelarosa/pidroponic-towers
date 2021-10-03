@@ -10,6 +10,8 @@ function registerDomListeners() {
 	$('#btn__connect-new-device').click(didClickPidroponicsConnect);
 	$('#btn__get-temperature-readout').click(didClickReadTemperature);
 	$('#btn__get-humidity-readout').click(didClickReadHumidity);
+	$('#btn__get-light-readout').click(didClickReadLight);
+	$('#btn__toggle-light').click(didClickToggleLight);
 };
 
 function didClickPidroponicsConnect() {
@@ -41,6 +43,30 @@ function didClickReadHumidity() {
 		},
 		xhr => {
 			console.log('There was a problem requesting humidity sensor readout.');
+			console.log(xhr);
+	});
+};
+
+function didClickReadLight() {
+	let txtLight = document.getElementById('txt__readout-light');
+	promiseToGetLightStatus(getAccessToken()).then(
+		lightData => {
+			txtLight.value = JSON.stringify(lightData.state);
+		},
+		xhr => {
+			console.log('There was a problem requesting light device status.');
+			console.log(xhr);
+	});
+};
+
+function didClickToggleLight() {
+	let txtLight = document.getElementById('txt__readout-light');
+	promiseToToggleLightStatus(getAccessToken()).then(
+		lightData => {
+			txtLight.value = JSON.stringify(lightData.state);
+		},
+		xhr => {
+			console.log('There was a problem requesting light device status.');
 			console.log(xhr);
 	});
 };
