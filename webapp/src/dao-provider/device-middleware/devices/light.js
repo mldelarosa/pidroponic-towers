@@ -7,7 +7,8 @@ module.exports = class LightDao {
 	
 	getLight() {
 		if(LightDao.cache.state) {
-			// Intentionally empty... state already exists so just return.
+			console.log('SERIAL_OUT: [Read Light state]');
+			console.log('SERIAL_IN: [Current light status]');
 		} else {
 			console.log('No cached state set for lights... defaulting to off');
 			console.log('SERIAL_OUT: [Read Light state]');
@@ -21,6 +22,7 @@ module.exports = class LightDao {
 
 	updateLight(light) {
 		console.log('SERIAL_OUT: write desired state of light');
+		console.log('Updating status to ->');
 		console.log(light.getState());
 		console.log('SERIAL_IN: read current state of light');
 		return light;

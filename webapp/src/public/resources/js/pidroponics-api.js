@@ -160,3 +160,37 @@ function promiseToToggleLightStatus(bearerToken) {
 		});
 	});
 }
+
+function promiseToUpdateDeviceStatus(device, newStatus, bearerToken) {
+	let deviceReadoutPath = '/api/device/' + device;
+	return new Promise((resolve, reject) => {
+		$.ajax({
+			type: "POST",
+			url: deviceReadoutPath,
+			dataType: 'json',
+			data: newStatus,
+			headers: { Authorization: 'Bearer ' + bearerToken },
+			success: function(data) {
+				let dataObj = JSON.parse(data);
+				resolve(dataObj);
+			},
+			error: function(xhr, status, error) {
+				console.log('Error requesting temperature readout.');
+				console.log(xhr);
+				if (xhr.status == 401) {
+					reauth();
+				}
+				reject(xhr);
+			}
+		});
+	});
+}
+
+function promiseToTurnLightOn(bearerToken) {
+	let newDesiredStatus = {state: { on: 1 }};
+	return promiseToUpdateDeviceStatus('light', newDesiredStatus, bearerToken);
+}
+function promiseToTurnLightOff(bearerToken) {
+	let newDesiredStatus = {state: { on: 0 }};
+	return promiseToUpdateDeviceStatus('light', newDesiredStatus, bearerToken);
+}

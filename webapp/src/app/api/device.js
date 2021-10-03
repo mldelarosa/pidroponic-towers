@@ -40,7 +40,6 @@ router.post('/light', function (req, res) {
 	let light = DeviceDaoFactory[Devices.LIGHT].getLight();
 	switch(req.body.cmd) {
 		case 'toggle':
-			console.log('On light toggle...');
 			light.toggleOn();
 			break;
 		default:

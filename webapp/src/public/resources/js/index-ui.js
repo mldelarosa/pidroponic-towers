@@ -12,6 +12,8 @@ function registerDomListeners() {
 	$('#btn__get-humidity-readout').click(didClickReadHumidity);
 	$('#btn__get-light-readout').click(didClickReadLight);
 	$('#btn__toggle-light').click(didClickToggleLight);
+	$('#btn__on-light').click(didClickLightOn);
+	$('#btn__off-light').click(didClickLightOff);
 };
 
 function didClickPidroponicsConnect() {
@@ -62,6 +64,30 @@ function didClickReadLight() {
 function didClickToggleLight() {
 	let txtLight = document.getElementById('txt__readout-light');
 	promiseToToggleLightStatus(getAccessToken()).then(
+		lightData => {
+			txtLight.value = JSON.stringify(lightData.state);
+		},
+		xhr => {
+			console.log('There was a problem requesting light device status.');
+			console.log(xhr);
+	});
+};
+
+function didClickLightOn() {
+	let txtLight = document.getElementById('txt__readout-light');
+	promiseToTurnLightOn(getAccessToken()).then(
+		lightData => {
+			txtLight.value = JSON.stringify(lightData.state);
+		},
+		xhr => {
+			console.log('There was a problem requesting light device status.');
+			console.log(xhr);
+	});
+};
+
+function didClickLightOff() {
+	let txtLight = document.getElementById('txt__readout-light');
+	promiseToTurnLightOff(getAccessToken()).then(
 		lightData => {
 			txtLight.value = JSON.stringify(lightData.state);
 		},
