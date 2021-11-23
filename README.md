@@ -1,2 +1,2 @@
 # pidroponic-towers
-Raspberry Pi powered hydroponic towers for controlling watering, lighting, and rotational controls
+Raspberry Pi powered hydroponic towers for controlling watering, lighting, and rotational controls by mldelarosa
